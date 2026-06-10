@@ -721,46 +721,6 @@
             gap: 12px;
             z-index: 10;
         }
-
-        // Properti
-        swotCurrentSlide: 0,
-        swotTotalSlides: 4,
-
-        // Method
-        swotNextSlide() {
-            if (this.swotCurrentSlide < this.swotTotalSlides - 1) {
-                this.swotCurrentSlide++;
-            } else {
-                this.swotCurrentSlide = 0;
-            }
-            this.swotScrollToSlide();
-        },
-        swotPrevSlide() {
-            if (this.swotCurrentSlide > 0) {
-                this.swotCurrentSlide--;
-            } else {
-                this.swotCurrentSlide = this.swotTotalSlides - 1;
-            }
-            this.swotScrollToSlide();
-        },
-        swotScrollToSlide() {
-            const container = this.$refs.swotContainer;
-            if (container && container.clientWidth) {
-                const slideWidth = container.clientWidth;
-                container.scrollTo({ left: this.swotCurrentSlide * slideWidth, behavior: 'smooth' });
-            }
-        },
-        swotUpdateSlideIndex() {
-            const container = this.$refs.swotContainer;
-            if (!container || !container.clientWidth) return;
-            const slideWidth = container.clientWidth;
-            let newIndex = Math.round(container.scrollLeft / slideWidth);
-            if (newIndex < 0) newIndex = 0;
-            if (newIndex >= this.swotTotalSlides) newIndex = this.swotTotalSlides - 1;
-            if (newIndex !== this.swotCurrentSlide && newIndex >= 0 && newIndex < this.swotTotalSlides) {
-                this.swotCurrentSlide = newIndex;
-            }
-        }
         .loading-spinner {
             width: 40px;
             height: 40px;
@@ -787,6 +747,16 @@
             .timeline-dot { left: -22px; width: 10px; height: 10px; }
         }
         @media (max-width: 640px) { .photo-quote { top: -25px; right: -10px; font-size: 0.65rem; padding: 4px 10px; } }
+        
+        /* FIX LOADING PAGE POSITION STABILITY */
+        .metamorphosis-container .relative {
+            min-height: 180px; /* Adjusted to ensure stability */
+        }
+        @media (max-width: 640px) {
+            .metamorphosis-container .relative {
+                min-height: 160px;
+            }
+        }
     </style>
 </head>
 <body x-data="{
@@ -1355,6 +1325,7 @@ class="bg-bg font-sans antialiased">
                     <div class="loading-spinner"></div>
                     <div class="loading-text">Memuat dokumen...</div>
                 </div>
+                <iframe x-show="!isLoading" :src="previewUrl" class="preview-iframe" frameborder="0" @load="isLoading = false"></iframe>
             </div>
             <div class="preview-footer">
                 <div class="preview-footer-info">
